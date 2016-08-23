@@ -65,7 +65,7 @@ class Moderator (Person):
 	def updateAllowedQual(qual):
 		if qual not in AllowedQualifications:
 			AllowedQualifications.append(qual)
-		else
+		else:
 			warnings.warn(qual + ' already present !')
 
 class Administrator (Person):
