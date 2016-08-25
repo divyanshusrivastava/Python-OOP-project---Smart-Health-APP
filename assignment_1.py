@@ -4,10 +4,11 @@
 ##############################
 
 ## Submitted By:
-	# Biswadeep Khan - MT16124 - M.Tech (CB)
-	# Divyanshu Srivastava - MT16125 - M.Tech (CB)
+	# Biswadeep Khan 		- MT16124 - M.Tech (CB)
+	# Divyanshu Srivastava 	- MT16125 - M.Tech (CB)
 
 import warnings
+import copy
 
 class Person (object):
 
@@ -96,6 +97,7 @@ class Administrator (Person):
 	def display(self):
 		super(Administrator, self).print_details()
 		print "\tEmergency Contact: \t" + self.emergencyContact
+		print "\tUser Type: \t" + self.userType
 
 
 
@@ -189,5 +191,47 @@ print "\nPrinting Details . . "
 admin1.display()
 
 # waiting for user to contine
-print "\n\n\t\t HIT ENTER TO EXIT . ."
+print "\n\n\t\t HIT ENTER TO CONTINUE . ."
+raw_input()
+
+
+## Storing multiple users in a list to illustrate updation and deletion
+## Admin and Mod can also be managed accordingly
+
+print "\nInserting 3 More Users . . "
+user_list = [user1]
+
+user2 = copy.deepcopy(user1)
+user2.username = 'sooraj_tyagi'
+user_list.append(user2)
+
+user3 = copy.deepcopy(user2)
+user3.username = 'gajraj_tyagi'
+user_list.append(user3)
+
+print "\nInsertion Complete . . "
+print "\nPrinting All Users . . "
+for index, user in enumerate(user_list):
+	print "\tS.no: " + str(index+1) + "\tUsername: " + user.username
+
+print "\nDeletion : Input username you wish to delete : ",
+temp = raw_input()
+
+flag = False	
+for index, user in enumerate(user_list):
+	if user.username == temp:
+		del user_list[index]
+		flag = True
+		print "\nDeletion Successful!"
+		break
+
+if not flag:
+	warnings.warn("Input username not found")
+
+print "\nPrinting All Users . . "
+for index, user in enumerate(user_list):
+	print "\tS.no: " + str(index+1) + "\tUsername: " + user.username
+
+
+print "\n\t\tHIT ENTER TO EXIT .. "
 raw_input()
