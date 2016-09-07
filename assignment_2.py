@@ -10,6 +10,7 @@
 import warnings
 import copy
 import MySQLdb
+import datetime
 
 def disp_user_menu(uname):
 
@@ -122,12 +123,12 @@ elif choice == 2:
 		ephone = raw_input('\tEmergency Phone: ')
 		cursor.execute('select * from qualification')
 		qual_tuple = cursor.fetchall()
-		print qual_tuple
+		print '\tAllowed Qualifications: ' + str(qual_tuple)
 		qual = list(raw_input('\t Academic Qualification (Insert as a list): '))
 		
-		for i in len(qual):
-			cursor.execute('insert into moderatorqualifications values (%d, "%s", "%s")' \
-				(i, uname, datetime.datetime.now().date()))
+		for i in range(1, len(qual)+1):
+			cursor.execute('insert into moderatorqualification values (%d, "%s", "%s")' %\
+				(i, uname, str(datetime.datetime.now().date())))
 			db.commit()
 
 
