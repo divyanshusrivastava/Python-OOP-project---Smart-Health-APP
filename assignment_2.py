@@ -11,98 +11,9 @@ import warnings
 import copy
 import MySQLdb
 
+def disp_user_menu(uname):
 
-class Person (object):
-
-	active = False
-
-	def __init__(self, username, email, fname, lname, address, about , url):
-		self.username = username[0:20]
-		self.email = email
-		self.__firstname = fname
-		self.__lastname = lname
-		self.address = address
-		self.aboutme = about
-		self.url = url		# check url datatype for 3 url..maybe a tuple or
-							# dictionary
-		self.usertype = ''
-		self.active = True
-
-	def sign_out(self):
-		self.active = False
-
-	def print_details(self):
-		print 
-		print "\tUserame: \t" + self.username
-		print "\tEmail ID: \t" + self.email
-		print "\tAddress: \t" + self.address
-		print "\tAbout Me: \t" + self.aboutme
-		print "\tLink to profile photo: \t" + self.url
-
-		
-
-class User (Person):
-
-	AllowedUserType = ('new', 'middle', 'old') # could be used later
-
-	def __init__(self, karma, **args):
-		self.karmaScore = karma
-		super(User, self).__init__(**args)
-		self.userType = 'new'
-
-	def change_user_type(self, utype):
-		if utype in self.AllowedUserType:
-			self.userType = utype
-		else:
-			warnings.warn(str(utype + ' is not an allowed user type!'), UserWarning)
-
-	def display(self):
-		super(User, self).print_details()
-		print "\tUser Type: \t" + self.userType
-		print "\tKARMA score: \t" + str(self.karmaScore)
-
-class Moderator (Person):
-
-	AllowedQualifications = ('MD', 'MBBS', 'BHMS', 'PHD') 	# There could be 
-							# more.. nood to be checked
-
-	def __init__(self, ephone, qual, **args):
-		self.emergencyContact = ephone
-		if qual in self.AllowedQualifications:
-			self.professionalQualification = qual
-		else:
-			warnings.warn(str(qual + ' is not a recognised qualification!'), UserWarning)
-
-		super(Moderator, self).__init__(**args)
-		self.userType = 'mod'
-
-	@staticmethod
-	def updateAllowedQual(qual):
-		if qual not in AllowedQualifications:
-			AllowedQualifications.append(qual)
-		else:
-			warnings.warn(qual + ' already present !')
-
-	def display(self):
-		super(Moderator, self).print_details()
-		print "\tEmergency Contact: \t" + self.emergencyContact
-		print "\tUser Type: \t" + self.userType
-		print "\tProfessional Qualification: \t" + self.professionalQualification
-
-class Administrator (Person):
-
-	def __init__(self, ephone, **args):
-		self.emergencyContact = ephone
-		super(Administrator, self).__init__(**args)
-		self.userType = 'admin'
-
-	def display(self):
-		super(Administrator, self).print_details()
-		print "\tEmergency Contact: \t" + self.emergencyContact
-		print "\tUser Type: \t" + self.userType
-
-
-
+	pass
 
 #####################################
 ## 
@@ -129,10 +40,41 @@ print '\t\t\t2. SIGN UP'
 choice = int(raw_input('\n\t\tEnter your choice: '))
 
 if choice == 1:
+	''' log in '''
+	uname = raw_input('\n\tEnter username: ')
+	pswd = raw_input('\tEnter password: ')
+	query = "select * from user where username = '%s' and password = '%s'" % \
+		(uname, pswd)
 
+	cursor.execute(query)
+	q_out = cursor.fetchall()
+	print q_out
+	
+	if len(q_out) == 0:
+		print '\n\t\tInvalid credentials !'
 
-	pass
+	else :
+		print '\n\tLogin successful !\n'
+		print q_out
+
+		if q_out[15] == '1':
+			''' usertype = user'''
+			disp_user_menu(uname)
+
+		elif q_out[15] == '2':
+			''' usertype = administrator'''
+			disp_admin_menu(uname)
+
+		elif q_out[15] == '3':
+			''' usertype = moderator'''
+			disp_mod_menu(uname)
+
+		else:
+			pass 				# TODO: suitable error message
+	
 elif choice == 2:
+	''' Sign Up '''
+
 	print '\tEnter details\n'
 	uname = raw_input('\tPreferred username: ')
 	pswd = raw_input('\tPassword: ')			# TODO: replaced by **
@@ -157,8 +99,39 @@ elif choice == 2:
 	 (uname, pswd, email1, email2, fname, lname, \
 			aboutme, p_url1, p_url2, p_url3, street_no, street_name, munc, dist, post, \
 			utype, 1)
-		
+
+	cursor.execute(query)
+	db.commit()
 	
+	if utype == 1:
+	 	''' insert karma score '''
+
+	 	pass
+
+	if utype == 2:
+		''' insert emergency phone also '''
+		ephone = raw_input('\t Emergency Phone: ')
+
+		cursor.execute('insert into administrator values ("%s", "%s")' % \
+			(uname, ephone))
+
+		db.commit()
+
+	if utype == 3:
+		''' insert emeg phone and qualification '''
+		ephone = raw_input('\tEmergency Phone: ')
+		cursor.execute('select * from qualification')
+		qual_tuple = cursor.fetchall()
+		print qual_tuple
+		qual = list(raw_input('\t Academic Qualification (Insert as a list): '))
+		
+		for i in len(qual):
+			cursor.execute('insert into moderatorqualifications values (%d, "%s", "%s")' \
+				(i, uname, datetime.datetime.now().date()))
+			db.commit()
+
+
+
 
 	
 
@@ -170,10 +143,10 @@ else:
 	print 'Invalid option !'
 
 
-cursor.execute(query)
-db.commit()
-cursor.execute('select * from user')
+# cursor.execute(query)
+# db.commit()
+# cursor.execute('select * from user')
 
-print cursor.fetchall()
+# print cursor.fetchall()
 
 db.close()
